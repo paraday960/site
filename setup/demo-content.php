@@ -489,9 +489,9 @@ if ( ! wp_get_nav_menu_object( $footer_menu_name ) ) {
 /* ---------------------------------------------------------
  * ۸) عنوان صفحات ووکامرس به فارسی + تنظیمات نهایی
  * ------------------------------------------------------- */
-$bz_pages_map = array( 'shop' => 'فروشگاه', 'cart' => 'سبد خرید', 'checkout' => 'پرداخت', 'myaccount' => 'حساب کاربری' );
+$bz_pages_map = array( 'shop' => 'فروشگاه', 'cart' => 'سبد خرید', 'checkout' => 'پرداخت', 'my-account' => 'حساب کاربری' );
 foreach ( $bz_pages_map as $bz_key => $bz_title ) {
-	$pid = wc_get_page_id( $bz_key );
+	$pid = wc_get_page_id( str_replace( '-', '_', $bz_key ) );
 	if ( $pid > 0 ) {
 		wp_update_post( array( 'ID' => $pid, 'post_title' => $bz_title, 'post_name' => $bz_key ) );
 	}
@@ -505,6 +505,13 @@ if ( $bz_pid > 0 && false === strpos( get_post_field( 'post_content', $bz_pid ),
 $bz_pid = wc_get_page_id( 'checkout' );
 if ( $bz_pid > 0 && false === strpos( get_post_field( 'post_content', $bz_pid ), '[woocommerce_checkout]' ) ) {
 	wp_update_post( array( 'ID' => $bz_pid, 'post_content' => '<!-- wp:shortcode -->[woocommerce_checkout]<!-- /wp:shortcode -->' ) );
+}
+
+/* آدرس استاندارد حساب کاربری ووکامرس: my-account */
+$bz_pid = wc_get_page_id( 'myaccount' );
+if ( $bz_pid > 0 && 'my-account' !== get_post_field( 'post_name', $bz_pid ) ) {
+	wp_update_post( array( 'ID' => $bz_pid, 'post_name' => 'my-account' ) );
+	flush_rewrite_rules();
 }
 wp_update_post( array( 'ID' => get_option( 'wp_page_for_privacy_policy' ), 'post_title' => 'حریم خصوصی' ) );
 

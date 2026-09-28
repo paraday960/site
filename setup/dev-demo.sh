@@ -63,12 +63,16 @@ mkdir -p wp-content/mu-plugins
 cat > wp-content/mu-plugins/zz-dynamic-host.php <<'EOF'
 <?php
 if ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) { return; }
+/* تشخیص https پشت reverse-proxy (الزام وردپرس ۷ به بالا) */
+if ( ! empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === strtolower( (string) $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) {
+	$_SERVER['HTTPS'] = 'on';
+}
 if ( ! defined( 'WP_HOME' ) && isset( $_SERVER['HTTP_HOST'] ) && $_SERVER['HTTP_HOST'] ) {
-    $scheme = ( ! empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) ) ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : 'http';
-    $host   = preg_replace( '/[^a-zA-Z0-9.\-:]/', '', $_SERVER['HTTP_HOST'] );
-    define( 'WP_HOME', $scheme . '://' . $host );
-    define( 'WP_SITEURL', $scheme . '://' . $host );
-    remove_action( 'template_redirect', 'redirect_canonical' );
+	$scheme = ( ! empty( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http';
+	$host   = preg_replace( '/[^a-zA-Z0-9.\-:]/', '', $_SERVER['HTTP_HOST'] );
+	define( 'WP_HOME', $scheme . '://' . $host );
+	define( 'WP_SITEURL', $scheme . '://' . $host );
+	remove_action( 'template_redirect', 'redirect_canonical' );
 }
 EOF
 
@@ -134,9 +138,7 @@ cat > router.php <<'EOF'
 if ( PHP_SAPI === 'cli-server' ) {
 	$path = parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH );
 	$file = __DIR__ . $path;
-	if ( $path !== '/' && is_file( $file ) && pathinfo( $file, PATHINFO_EXTENSION ) !== 'php' ) { return false; }
-	$_SERVER['SCRIPT_NAME'] = '/index.php';
-	$_SERVER['PHP_SELF']    = '/index.php';
+	if ( '/' !== $path && ( is_file( $file ) || is_dir( $file ) ) ) { return false; }
 }
 require __DIR__ . '/index.php';
 EOF
