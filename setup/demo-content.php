@@ -523,4 +523,8 @@ update_option( 'woocommerce_task_list_welcome_modal_dismissed', 'yes' );
 update_option( 'woocommerce_allow_tracking', 'no' );
 update_option( 'woocommerce_show_marketplace_suggestions', 'no' );
 
+/* غیرفعال‌کردن حالت «به‌زودی» ووکامرس (وگرنه فروشگاه برای مهمان‌ها قفل می‌شود!) */
+update_option( 'woocommerce_coming_soon', 'no' );
+update_option( 'woocommerce_store_pages_only', 'no' );
+
 echo "\n=== تمام شد! تعداد کل محصولات: " . wp_count_posts( 'product' )->publish . " ===\n";

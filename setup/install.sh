@@ -126,6 +126,8 @@ update_option( "woocommerce_enable_myaccount_registration", "yes" );
 update_option( "woocommerce_manage_stock", "yes" );
 update_option( "woocommerce_task_list_hidden", "yes" );
 update_option( "woocommerce_show_marketplace_suggestions", "no" );
+update_option( "woocommerce_coming_soon", "no" );
+update_option( "woocommerce_store_pages_only", "no" );
 echo "تنظیمات فروشگاه ✓\n";
 '
 $WP option update permalink_structure '/%postname%/'
