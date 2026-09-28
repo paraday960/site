@@ -1,0 +1,62 @@
+# فروشگاه بازار — وردپرس + ووکامرس + MariaDB
+# اجرا:  docker compose up -d
+# فروشگاه:  http://localhost:8080   |   phpMyAdmin: http://localhost:8081
+
+services:
+  db:
+    image: mariadb:11
+    container_name: bazaar-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: bazaar_root_pass
+      MYSQL_DATABASE: wp_shop
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: wp_pass_123
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wordpress:
+    image: wordpress:php8.4-apache
+    container_name: bazaar-wp
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: wp_pass_123
+      WORDPRESS_DB_NAME: wp_shop
+      WORDPRESS_TABLE_PREFIX: wp_
+      # واحد پول و زبان را بعد از نصب از پیشخوان تنظیم کنید.
+    volumes:
+      - wp_data:/var/www/html
+      # قالب بازار همیشه از ریپو خوانده می‌شود (تغییرات بدون rebuild اعمال می‌شود)
+      - ./wp-content/themes/bazaar:/var/www/html/wp-content/themes/bazaar
+    links:
+      - db
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: bazaar-pma
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: wp_user
+      PMA_PASSWORD: wp_pass_123
+      UPLOAD_LIMIT: 64M
+
+volumes:
+  db_data:
+  wp_data:

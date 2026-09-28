@@ -1,0 +1,23 @@
+# وردپرس
+wp-config.php
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/backup*/
+wp-content/cache/
+wp-content/plugins/woocommerce/
+wp-content/languages/
+
+# محیط توسعه/دمو
+out/
+.wp-cli/
+*.sql
+*.zip
+*.tar.gz
+
+# سیستم‌عامل و ویرایشگرها
+.DS_Store
+Thumbs.db
+*.swp
+*.log
+.idea/
+.vscode/
